@@ -28,7 +28,7 @@ export const login = async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { email },
     });
-
+    
     if (!user)
       return res.status(401).json({ message: "User does not exists." });
 
@@ -46,6 +46,9 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET_KEY,
       { expiresIn: age }
     );
+
+    const {password: userPassword, ...userInfo} = user
+
     res
       .cookie("token", token, {
         httpOnly: true,
@@ -53,7 +56,7 @@ export const login = async (req, res) => {
         // secure: true,
       })
       .status(200)
-      .json("Success");
+      .json(userInfo);
     // res.setHeader("Set-Cookie", "test=" + "myValue").json("Success");
   } catch (err) {
     console.log(err);
